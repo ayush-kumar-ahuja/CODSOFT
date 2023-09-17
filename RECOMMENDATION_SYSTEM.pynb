@@ -1,0 +1,25 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
+data = pd.read_csv('movielens_dataset.csv')
+user_item_matrix = data.pivot_table(index='userId', columns='movieId', values='rating')
+user_similarity = cosine_similarity(user_item_matrix.fillna(0))
+user_similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
+def recommend_movies(user_id, num_recommendations=5):
+    user_ratings = user_item_matrix.loc[user_id].dropna()
+    recommendations = pd.DataFrame(columns=['movieId', 'title', 'predicted_rating'])
+    for similar_user, similarity_score in user_similarity_df[user_id].items():
+        if similarity_score > 0:
+            similar_user_ratings = user_item_matrix.loc[similar_user].dropna()
+            for movie_id, rating in similar_user_ratings.items():
+                if movie_id not in user_ratings.index:
+                    predicted_rating = similarity_score * rating
+                    recommendations = recommendations.append({'movieId': movie_id, 'title': data[data['movieId'] == movie_id]['title'].values[0], 'predicted_rating': predicted_rating}, ignore_index=True)
+
+    recommendations = recommendations.sort_values(by='predicted_rating', ascending=False).head(num_recommendations)
+    return recommendations
+
+user_id = 1
+recommended_movies = recommend_movies(user_id, num_recommendations=5)
+print(f"Recommended movies for user {user_id}:")
+print(recommended_movies[['title', 'predicted_rating']])
