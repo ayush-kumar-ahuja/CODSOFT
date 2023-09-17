@@ -1,0 +1,26 @@
+import random
+
+responses = {"hello": ["Hello!", "Hi there!", "Hey!"], "how are you": ["I'm fine, thanks for asking!", "I good and here to help."],
+    "what's your name": ["I'm a chatbot.", "I don't have a name."],
+    "whats your purpose": ["I am built for a CODSOFT internship project.","I was developed for learning","I was built for a learning project"],
+    "who is your owner":["As an AI chatbot i dont have an owner,but i was developed by Ayush Kumar.","No one"],
+    "default": ["I'm not sure how to respond to that.","Sorry, can you ask a different question?"]
+}
+
+def get_response(user_input):
+    user_input = user_input.lower()
+    if user_input in responses:
+        return random.choice(responses[user_input])
+    else:
+        return random.choice(responses["default"])
+
+print("Chatbot: Hello! (write 'Bye' to exit).")
+while True:
+    user_input = input("You: ")
+    if user_input.lower() == 'Bye':
+        print("Chatbot: Goodbye!,Hope to see you again.")
+        break
+    response = get_response(user_input)
+    print("Chatbot:", response)
+
+
